@@ -40,7 +40,7 @@ Useful bounds for extractors: \url{https://homes.cs.washington.edu/~anuprao/pubs
   The probability that \eqref{eq:tv} is violated for $f(\cdot)=\Ext(\cdot)$ is $2^{-\Omega(2^k\varepsilon^2)}$ by Chernoff bound: for each $x\in\Supp(X)$ (there are at least $2^k$), the probability that $\Ext(x)\in T$ is $\mu(T)$, so the mean is $\mu(T)$ and then you use Chernoff bound to show concentration with bound $2^{-\Omega(K\varepsilon^2)}$, and union bound over the $2^q=2^{2^m}$ possible subsets.
 \end{proof}
 \begin{theorem}[Thm 6.14 in Vadhan]
-  For every $n$, $k\in[0,n]$ and $\varepsilon > 0$, there exists a $(k,\varepsilon)$-extractor $\Ext : \{0,1\}^n \times  \{0,1\}^d \to \{0,1\}^m$ with $m = k + d - 2\log(1/\varepsilon) - O(1)$ and $d = \log(n - k) + 2\log(1/\varepsilon) + O(1)$.
+  For every $n$, $k\in[0,n]$ and $\varepsilon > 0$, there exists a $(k,\varepsilon)$-extractor $\Ext : \{0,1\}^n \times  \{0,1\}^d \to \{0,1\}^m$ achieving $m \le k - 2\log(1/\varepsilon) - O(1)$ and $d \ge \log(n - k) + 2\log(1/\varepsilon) + O(1)$. \ryl{In Vadhan, the definition is a bit different: there is an extra $+d$ in $m$ which includes the seed bits}
   Both $d$ and $m$ are optimal up to the $O(1)$.
 \end{theorem}
 \begin{proof}
@@ -60,15 +60,21 @@ Useful bounds for extractors: \url{https://homes.cs.washington.edu/~anuprao/pubs
 
   \item Is this a \emph{good} extractor? This is the question.
 
-    Is there a code with $q=\poly(1/\varepsilon)$ such that among any $\frac{\poly q}{\varepsilon^2}$ codewords $\mathcal{L}$ and all $i\in[n]$,
+    Is there a code with $q=\poly(1/\varepsilon)$ such that among any $L=\poly q$ codewords $\mathcal{L}$ and all $i\in[n]$,
     \begin{align}
-    \abs{\Pr_{c\sim \mathcal{L}}\left[ c_i\in T \right] - \Pr\left[ U_q\in T \right] }\le \varepsilon
+      \E_{i\sim [n]}\max_{T\subset[q]}\abs{\Pr_{c\sim \mathcal{L}}\left[ c_i\in T \right] - \Pr\left[ U_q\in T \right] }\le \varepsilon
       \label{}
     \end{align}
 
-    This would give an extractor with seed length $\log n$ (but our $Rn$ is their $n$), min-entropy $k=O(\log q) + 2\log(1/\varepsilon)$, and output length $m=\log q$.
+    This would give an extractor with seed length $\log n$ (but our $Rn$ is their $n$).
     I guess if you want to be list-decodable to radius $1-1/q-\varepsilon$, then your rate can be at best $1/\varepsilon^2$, so then your seed length is actually $\log n/\varepsilon^2 = \log n +2\log 1/\varepsilon$, so that's where the optimal seed length comes from. So really we want optimal rate, and we're happy with ``good enough'' alphabet size and list size.
 
+    This would give min-entropy $k$ and output length $q$ both in $\Theta(\log 1/\varepsilon)$ time.
+    Obviously, $L=2^k\ge q/\varepsilon^2$ makes sense, because with a smaller list size, some coordinates with be unsupported.
+
     \ryl{I guess $q=1/\varepsilon$ is the actual parameter regime that we care about, not $q=2^{1/\varepsilon}$.}
+
+    \ryl{I'm confused, why don't we just look at each coordinate separately and union bound over all $n$ coordinates?}
+    \ryl{Wait this is obviously impossible since on any coordinate you can obviously find $L$ coordinates that all have the same value. Oh. It's an average over all coordinates. Yeah so it is like a list recovery condition.}
 \end{enumerate}
 \end{question}
