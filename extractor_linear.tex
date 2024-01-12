@@ -1,0 +1,74 @@
+%\newcommand\Ext{\mathsf{Ext}}
+\section{Introduction}
+
+\begin{definition}[Useful definition of total variation distance.]
+  The distance between two distributions $f(X)$ and $U_q$ over $[q]$ is given by 
+  \begin{align}
+    \max_{T\subset [q]} |\Pr[f(X)\in T] - \Pr[U_q\in T]|.
+    \label{eq:tv}
+  \end{align}
+\end{definition}
+\begin{definition}[Useful chernoff bound]
+  Let $X_1,\dots,X_t$ be random variables on $[0,1]$, and $X=\sum_{i}^{} X_i/t$. Then
+  \begin{align}
+    \Pr[|X-\mu|\ge \varepsilon]\l2 2\exp(-t\varepsilon^2/4).
+    \label{}
+  \end{align}
+\end{definition}
+
+Useful bounds for extractors: \url{https://homes.cs.washington.edu/~anuprao/pubs/lowweight.pdf} (Theorem 2.10, Cor 2.11, Cor 2.12, Cor 2.13)
+
+
+\url{https://people.seas.harvard.edu/~salil/pseudorandomness/extractors.pdf}
+\begin{definition}
+  An function $\Ext:\{0,1\}^n\times \{0,1\}^d\to\{0,1\}^m$ is a \emph{strong seeded extractor} for min-entropy $k$ and error $\varepsilon$ if for every min-entropy $k$ source $X$,
+  \begin{align}
+    \Pr_{u\sim U_d}\left[ |\Ext(X,u) - U_m|\le \varepsilon \right]\ge 1-\varepsilon.
+    \label{}
+  \end{align}
+
+  An extractor is \emph{linear} if $\Ext(\cdot,u)$ is a lienar function over $GF(2)$ for every $u\in\{0,1\}^d$.
+\end{definition}
+
+\begin{proposition}[Thm 6.12 in Vadhan, optimal output length]
+  There is an extractor $\Ext:\{0,1\}^n\to\{0,1\}^m$ with $m=k-2\log(1/\varepsilon)-O(1)$, where $k$ is the min-entropy requirement.
+
+  Supposedly there is an impossibility result that  $m\le k-2\log(1/\varepsilon)+O(1)$
+\end{proposition}
+\begin{proof}
+  Take a random extractor. Let $X$ be a min-entropy $k$ distribution. \ryl{I think this proof needs some work...you need some weighted sum for the Chernoff bound. Oh. Lemma 6.10 of Vadhan. Every $k$-source is a convex combination of flat $k$-sources (if $2^k$ is an integer), so it suffices to show something is an extractor for flat $k$-sources.}
+  The probability that \eqref{eq:tv} is violated for $f(\cdot)=\Ext(\cdot)$ is $2^{-\Omega(2^k\varepsilon^2)}$ by Chernoff bound: for each $x\in\Supp(X)$ (there are at least $2^k$), the probability that $\Ext(x)\in T$ is $\mu(T)$, so the mean is $\mu(T)$ and then you use Chernoff bound to show concentration with bound $2^{-\Omega(K\varepsilon^2)}$, and union bound over the $2^q=2^{2^m}$ possible subsets.
+\end{proof}
+\begin{theorem}[Thm 6.14 in Vadhan]
+  For every $n$, $k\in[0,n]$ and $\varepsilon > 0$, there exists a $(k,\varepsilon)$-extractor $\Ext : \{0,1\}^n \times  \{0,1\}^d \to \{0,1\}^m$ with $m = k + d - 2\log(1/\varepsilon) - O(1)$ and $d = \log(n - k) + 2\log(1/\varepsilon) + O(1)$.
+  Both $d$ and $m$ are optimal up to the $O(1)$.
+\end{theorem}
+\begin{proof}
+  Random construction again.
+\end{proof}
+
+
+\begin{definition}
+  Given a rate $R$ code $C$ given by encoding function $\Enc:[q]^{Rn}\to C\subset[q]^n$, the corresponding extractor $\Ext:[q]^{Rn}\times [n]\mapsto [q]$ given by $\Ext(x,y) = \Enc(x)_y$.
+\end{definition}
+
+\begin{question}
+  Let $q=2^m$.
+  Let $\Enc:[q]^{Rn}\to[q]^n$ be a random linear code, and $\Ext:[q]^{Rn}\times [n]\to [q]$ be the corresponding extractor.
+\begin{enumerate}
+  \item Is this a linear extractor? YES. It is $\mathbb{F}_q$ linear, and when we view it as a map of binary bits you can see it as $\mathbb{F}_2$ linear. We can identify each $\mathbb{F}_q$ element by a vector (a polynomial in $\mathbb{F}_2[t]/p(t)$ where $p$ is a degree-$m$ irreducible. Here $q=2^m$), and then multiplying by any $\alpha\in\mathbb{F}_q$ element is an $m\times m$ $\mathbb{F}_2$-matrix multiplication (the columns are the images of $1,t,t^2,\dots,t^{m-1}\in\mathbb{F}_q$ under multiplication by $\alpha$).
+
+  \item Is this a \emph{good} extractor? This is the question.
+
+    Is there a code with $q=\poly(1/\varepsilon)$ such that among any $\frac{\poly q}{\varepsilon^2}$ codewords $\mathcal{L}$ and all $i\in[n]$,
+    \begin{align}
+    \abs{\Pr_{c\sim \mathcal{L}}\left[ c_i\in T \right] - \Pr\left[ U_q\in T \right] }\le \varepsilon
+      \label{}
+    \end{align}
+
+    This would give an extractor with seed length $\log n$ (but our $Rn$ is their $n$), min-entropy $k=O(\log q) + 2\log(1/\varepsilon)$, and output length $m=\log q$.
+    I guess if you want to be list-decodable to radius $1-1/q-\varepsilon$, then your rate can be at best $1/\varepsilon^2$, so then your seed length is actually $\log n/\varepsilon^2 = \log n +2\log 1/\varepsilon$, so that's where the optimal seed length comes from. So really we want optimal rate, and we're happy with ``good enough'' alphabet size and list size.
+
+    \ryl{I guess $q=1/\varepsilon$ is the actual parameter regime that we care about, not $q=2^{1/\varepsilon}$.}
+\end{enumerate}
+\end{question}
